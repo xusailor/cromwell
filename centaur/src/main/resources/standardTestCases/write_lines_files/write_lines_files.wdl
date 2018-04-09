@@ -8,7 +8,7 @@ task make_file {
   output {
     File out = "out"
   }
-  runtime { docker:"ubuntu:latest" }
+  runtime { docker:"us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 task switcho_reverso {
@@ -26,7 +26,7 @@ task switcho_reverso {
     Array[String] out = read_lines(stdout())
   }
   runtime {
-    docker:"ubuntu:latest"
+    docker:"us.gcr.io/google-containers/ubuntu-slim:0.14"
     failOnStderr: true
   }
 }

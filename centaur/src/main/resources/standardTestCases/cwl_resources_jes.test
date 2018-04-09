@@ -1,6 +1,6 @@
 name: cwl_resources_jes
 testFormat: workflowsuccess
-backends: [Jes]
+backends: [Papi]
 
 files {
   workflow: cwl_resources/cwl_resources.cwl

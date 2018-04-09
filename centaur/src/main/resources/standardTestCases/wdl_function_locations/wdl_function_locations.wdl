@@ -4,7 +4,7 @@ task wdl_function_locations_i {
     command {
       echo ${sep=":" array} > out
     }
-    runtime { docker: "ubuntu:latest" }
+    runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
     output { String out = read_string("out") }
 }
 
@@ -14,7 +14,7 @@ task wdl_function_locations_ii {
       echo ${x} > out
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         # A (pure) WDL function in the runtime attributes:
         continueOnReturnCode: range(3)
     }

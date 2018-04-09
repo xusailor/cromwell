@@ -23,6 +23,6 @@ task do_nothing {
     String str = "str"
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }

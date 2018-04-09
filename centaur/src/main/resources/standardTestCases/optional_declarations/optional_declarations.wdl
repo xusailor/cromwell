@@ -13,7 +13,7 @@ task strings {
     String? out_coerced_string = coerced_string
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

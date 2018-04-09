@@ -16,7 +16,7 @@ task output_redirection {
         String stderr = read_string(stderr())
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 }
 

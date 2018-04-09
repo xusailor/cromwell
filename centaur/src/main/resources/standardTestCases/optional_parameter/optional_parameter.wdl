@@ -13,7 +13,7 @@ task select_first_with_optionals {
 		echo "${unsuppliedWithDefault}"
 	}
     runtime {
-	  docker: "ubuntu:latest"
+	  docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 	}
 	output {
 		Array[String] out = read_lines(stdout())
@@ -31,7 +31,7 @@ task optionals_with_defaults {
 		echo "${unsupplied}"
 	}
     runtime {
-	  docker: "ubuntu:latest"
+	  docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 	}
 	output {
 		Array[String] out = read_lines(stdout())
@@ -53,7 +53,7 @@ task optional_array_interpolations {
 		echo "${unsupplied_prefix}${sep="," unsupplied}"
 	}
     runtime {
-	  docker: "ubuntu:latest"
+	  docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 	}
 	output {
 		Array[String] out = read_lines(stdout())
@@ -75,7 +75,7 @@ task interpolation_additions {
 		echo ${"unsuppliedInt: " + unsuppliedInt}
 	}
 	runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 	output {
 		Array[String] out = read_lines(stdout())
@@ -93,7 +93,7 @@ task default_interpolations {
 		echo ${default="HAPPY_BIRTHDAY_RUCHI" unsupplied}
 	}
 	runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 	output {
 		Array[String] out = read_lines(stdout())

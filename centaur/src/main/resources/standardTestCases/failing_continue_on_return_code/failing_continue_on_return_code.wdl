@@ -7,7 +7,7 @@ task A {
   }
   runtime {
     continueOnReturnCode: false
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -17,7 +17,7 @@ task B {
     echo ${B_in}
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

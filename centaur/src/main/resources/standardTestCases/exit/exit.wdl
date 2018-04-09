@@ -3,7 +3,7 @@ task exitTask {
     exit 5
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     continueOnReturnCode: 5
   }
 }

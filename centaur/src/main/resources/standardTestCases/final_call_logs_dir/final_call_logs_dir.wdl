@@ -13,7 +13,7 @@ task hello {
     Pair[File, File] pair_out = ("left.out", "right.out")
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

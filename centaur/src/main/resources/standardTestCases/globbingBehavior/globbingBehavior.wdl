@@ -17,7 +17,7 @@ task writeFiles {
     Array[File] specificDirectory = glob(dir + "/*.txt")
   }
   runtime {
-    docker:"ubuntu:latest"
+    docker:"us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -33,7 +33,7 @@ task unexpectedReturnCode {
   }
 
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     continueOnReturnCode: 3
   }
 }
@@ -61,7 +61,7 @@ task writeLinks {
     Array[File] hardLinkContents =  glob("${dir}/hard_link*.txt")
   }
   runtime {
-    docker:"ubuntu:latest"
+    docker:"us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

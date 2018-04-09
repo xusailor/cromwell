@@ -3,7 +3,7 @@ task first_task {
     echo foo
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     String out = read_string(stdout())
@@ -16,7 +16,7 @@ task second_task {
     echo ${relay}
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     String out = read_string(stdout())

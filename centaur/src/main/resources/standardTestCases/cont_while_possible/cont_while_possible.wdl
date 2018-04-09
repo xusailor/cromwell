@@ -9,7 +9,7 @@ task boundToFail {
    String badOutput = read_string(stdout())
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -19,7 +19,7 @@ task shouldNotStart {
      echo ${str}
     }
     runtime {
-       docker: "ubuntu:latest"
+       docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 }
 
@@ -30,7 +30,7 @@ task shouldSucceed {
      echo ${str}
     }
     runtime {
-       docker: "ubuntu:latest"
+       docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
      String stalling = read_string(stdout())
@@ -43,7 +43,7 @@ task delayedTask {
      echo ${str_2}
     }
     runtime {
-       docker: "ubuntu:latest"
+       docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
      String notUsed = read_string(stdout())

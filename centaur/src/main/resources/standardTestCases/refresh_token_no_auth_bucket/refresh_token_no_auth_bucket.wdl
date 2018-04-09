@@ -7,7 +7,7 @@ task reverse {
     String done = read_string(stdout())
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

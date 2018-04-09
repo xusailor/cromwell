@@ -7,7 +7,7 @@ task echo_sleep_exit {
     }
     runtime {
         continueOnReturnCode: [0, 2, 4]
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         String o = read_string(stdout())

@@ -6,7 +6,7 @@ Int i
 	  fi
 	}
 	runtime {
-		docker: "ubuntu:latest"
+		docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 	}
 }
 

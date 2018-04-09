@@ -4,7 +4,7 @@ id: three_step
 # Workflow-level DockerRequirement
 hints:
   DockerRequirement:
-    dockerPull: "ubuntu:latest"
+    dockerPull: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 inputs:
 - id: pattern
   type: string

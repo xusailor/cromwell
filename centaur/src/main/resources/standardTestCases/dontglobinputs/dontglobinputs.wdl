@@ -4,7 +4,7 @@ task createfile {
         echo "blah" > someotherfile.unique.txt
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         File out = "somefile.unique.txt"
@@ -20,7 +20,7 @@ task globtask {
         echo "blah" > outputfile2.unique.txt
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         Array[File] outs = glob("*.unique.txt")
@@ -33,7 +33,7 @@ task length {
         echo "${sep=' ' array}" | wc -w
     }
     runtime {
-            docker: "ubuntu:latest"
+            docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         }
     output {
         Int size = read_int(stdout())

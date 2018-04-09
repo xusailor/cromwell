@@ -14,7 +14,7 @@ task golden_pie {
   }
 
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

@@ -6,7 +6,7 @@ task glob_task {
         echo "globArray" > globArray.txt
     }
 
-    runtime {docker:"ubuntu:latest"}
+    runtime {docker:"us.gcr.io/google-containers/ubuntu-slim:0.14"}
 
     output {
         Array[File] staticFiles = ["staticFile.txt"]

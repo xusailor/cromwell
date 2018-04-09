@@ -16,7 +16,7 @@ task read_file {
       cat ${input_file}
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         File out = stdout()

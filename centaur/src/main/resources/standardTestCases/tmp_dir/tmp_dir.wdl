@@ -13,7 +13,7 @@ task mkTmpFile {
         echo "tmp_dir test wdl" > tmp
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         String out = read_string("tmp")
@@ -26,7 +26,7 @@ task writeToTmpDir {
         cat $TMPDIR/tmp
    }
    runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
    }
    output {
         String tmpDir = read_string(stdout())

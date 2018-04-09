@@ -15,7 +15,7 @@ task composeEngineFunctions {
     String y = read_int(stderr()) + x + read_string(blah)
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

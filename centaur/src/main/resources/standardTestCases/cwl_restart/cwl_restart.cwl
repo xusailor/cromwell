@@ -4,7 +4,7 @@ id: cwl_restart
 # Workflow-level DockerRequirement
 requirements:
   DockerRequirement:
-    dockerPull: "ubuntu:latest"
+    dockerPull: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 inputs: []
 outputs:
 - id: flag

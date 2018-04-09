@@ -8,7 +8,7 @@ task source {
         String result = read_string(stdout())
         File resultFile = stdout()
     }
-    runtime {docker: "ubuntu:latest"}
+    runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task consume {
@@ -19,7 +19,7 @@ task consume {
     output {
         String out = read_string(stdout())
     }
-    runtime {docker: "ubuntu:latest"}
+    runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task consumeFiles {
@@ -30,7 +30,7 @@ task consumeFiles {
     output {
         String x = read_string(stdout())
     }
-    runtime {docker: "ubuntu:latest"}
+    runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 workflow multplesourcedarray {

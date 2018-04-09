@@ -1,14 +1,14 @@
 task cat {
   File f
   command { cat ${f} }
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
   output { String out = read_string(stdout()) }
 }
 
 task mk_file {
   Int index
   command { echo "file_${index}" > out }
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
   output { File f = "out" }
 }
 
@@ -19,7 +19,7 @@ task defined_in_task {
     ${true="cat" false="echo no file" is_defined} ${f}
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     String out = read_string(stdout())

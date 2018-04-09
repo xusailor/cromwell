@@ -35,7 +35,7 @@ task concat_files {
     File concatenated = stdout()
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -51,7 +51,7 @@ task count_lines {
     Int count = read_int(stdout())
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -66,7 +66,7 @@ task serialize {
     String contents = read_string(stdout())
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 
@@ -80,5 +80,5 @@ task mk_file {
   output {
     File out = "i"
   }
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }

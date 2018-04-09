@@ -7,7 +7,7 @@ task sleep_exit {
         exit ${exit_code}
     }
     runtime {
-       docker: "ubuntu:latest"
+       docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
     output {
         Boolean done = true

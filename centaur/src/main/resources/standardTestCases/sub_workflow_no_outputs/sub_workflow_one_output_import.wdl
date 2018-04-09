@@ -19,7 +19,7 @@ task hello {
   command {}
 
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     Array[String] out = inputs

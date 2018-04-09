@@ -2,7 +2,7 @@ cwlVersion: v1.0
 class: CommandLineTool
 hints:
   DockerRequirement:
-    dockerPull: "ubuntu:latest"
+    dockerPull: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 baseCommand: echo
 inputs:
   message:

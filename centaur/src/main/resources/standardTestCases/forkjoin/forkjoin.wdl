@@ -13,7 +13,7 @@ task mkFile {
   output {
     File numbers = stdout()
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task grep {
@@ -25,7 +25,7 @@ task grep {
   output {
     Int count = read_int(stdout())
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task wc {
@@ -36,7 +36,7 @@ task wc {
   output {
     Int count = read_int(stdout())
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task join {
@@ -48,7 +48,7 @@ task join {
   output {
     Int proportion = read_int(stdout())
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 workflow forkjoin {

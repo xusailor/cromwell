@@ -28,7 +28,7 @@ task make_2_byte_file {
   output {
     File f = "ab.txt"
   }
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 workflow runtime_attribute_expressions {

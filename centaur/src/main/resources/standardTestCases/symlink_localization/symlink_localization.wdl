@@ -35,7 +35,7 @@ task localize_with_docker {
     output {
         String out = read_string(stdout())
     }
-    runtime { docker: "ubuntu:latest" }
+    runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 workflow symlink_localization {

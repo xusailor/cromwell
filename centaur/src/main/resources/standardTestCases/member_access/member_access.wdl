@@ -7,7 +7,7 @@ task echo_str {
     Pair[String, Int] left = (read_string(stdout()), 27)
   }
   runtime { 
-   docker: "ubuntu:latest"
+   docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
 }
 

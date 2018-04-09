@@ -7,7 +7,7 @@ task make_a_file {
   output {
     File a_file = "a_file"
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task size {
@@ -46,7 +46,7 @@ task size {
     Float created_file_size_in_tib = size("created_file", "TiB")
   }
 
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 workflow sizeenginefunction {

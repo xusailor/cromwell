@@ -5,7 +5,7 @@ task make_a_file {
   output {
     File a_file = "myfilename.bam"
   }
-  runtime {docker: "ubuntu:latest"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"}
 }
 
 task sub {
@@ -21,7 +21,7 @@ task sub {
     }
 
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 
     output {

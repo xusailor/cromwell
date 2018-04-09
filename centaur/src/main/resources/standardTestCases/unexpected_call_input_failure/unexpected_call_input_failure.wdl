@@ -16,7 +16,7 @@ task hello {
     echo "Hello ${addressee}!"
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     String salutation = read_string(stdout())

@@ -30,7 +30,7 @@ task fail {
     exit 1
   }
   runtime {
-    docker: "ubuntu:latest"
+    docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
   }
   output {
     Boolean o = read_boolean(stdout())

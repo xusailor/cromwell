@@ -4,7 +4,7 @@ task makeString {
 		echo hello
 	}
 	runtime {
-	  docker: "ubuntu:latest"
+	  docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
 	}
 	output {
 	    String out = read_string(stdout())

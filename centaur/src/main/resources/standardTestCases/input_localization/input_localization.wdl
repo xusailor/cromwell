@@ -36,7 +36,7 @@ task localize_with_docker {
     output {
         String ls = read_string(stdout())
     }
-    runtime { docker: "ubuntu:latest" }
+    runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 task echo_int_with_docker {
@@ -45,7 +45,7 @@ task echo_int_with_docker {
     echo ${int} > out
   }
   output {File out = "out"}
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 workflow wf {

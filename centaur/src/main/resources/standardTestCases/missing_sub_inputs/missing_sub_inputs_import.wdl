@@ -7,7 +7,7 @@ task head {
   output {
     String headOut = read_string(stdout())
   }
-  runtime { docker: "ubuntu:latest" }
+  runtime { docker: "us.gcr.io/google-containers/ubuntu-slim:0.14" }
 }
 
 workflow missing_inputs_sub_wf {

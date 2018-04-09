@@ -9,7 +9,7 @@ task continueOnRC1 {
         File ohno = stdout()
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         continueOnReturnCode: true
     }
 }
@@ -25,7 +25,7 @@ task continueOnRC2 {
         String ohno = read_string(stdout())
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         continueOnReturnCode: 12
     }
 }
@@ -41,7 +41,7 @@ task continueOnRC3 {
         String ohno = read_string(stdout())
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         continueOnReturnCode: [1, 12, 123, 23, 3]
     }
 }
@@ -57,7 +57,7 @@ task finisher {
         String finished = read_string(stdout())
     }
     runtime {
-        docker: "ubuntu:latest"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
         continueOnReturnCode: 0
     }
 }

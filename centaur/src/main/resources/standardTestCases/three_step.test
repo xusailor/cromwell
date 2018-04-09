@@ -15,6 +15,6 @@ metadata {
   "calls.ps.executionStatus": Done
   "calls.cgrep.executionStatus": Done
   "calls.ps.runtimeAttributes.docker": "ubuntu:bionic"
-  "calls.wc.runtimeAttributes.docker": "ubuntu:latest"
+  "calls.wc.runtimeAttributes.docker": "us.gcr.io/google-containers/ubuntu-slim:0.14"
   "calls.cgrep.runtimeAttributes.docker": "debian:jessie"
 }
