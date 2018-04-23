@@ -12,7 +12,6 @@ import wdl.model.draft3.elements._
 import wdl.model.draft3.graph.LinkedGraph
 import wom.{CommandPart, RuntimeAttributes}
 import wom.callable.{Callable, CallableTaskDefinition}
-
 import wdl.model.draft3.graph.expression.WomExpressionMaker.ops._
 import wdl.draft3.transforms.linking.expression._
 import wom.callable.Callable._
@@ -21,8 +20,10 @@ import wdl.model.draft3.graph.ExpressionValueConsumer.ops._
 import wdl.draft3.transforms.linking.typemakers._
 import wdl.draft3.transforms.linking.expression.consumed._
 import wdl.model.draft3.elements.ExpressionElement.KvPair
+import wdl.model.draft3.elements.MetaValueElement.MetaValueElementString
 import wom.expression.WomExpression
-import wom.types.{WomOptionalType, WomType}
+import wom.types.{WomOptionalType, WomSingleFileType, WomType}
+
 object TaskDefinitionElementToWomTaskDefinition {
 
   final case class TaskDefinitionElementToWomInputs(taskDefinitionElement: TaskDefinitionElement, typeAliases: Map[String, WomType])
@@ -32,7 +33,9 @@ object TaskDefinitionElementToWomTaskDefinition {
     val declarations = a.taskDefinitionElement.declarations
     val outputElements = a.taskDefinitionElement.outputsSection.map(_.outputs).getOrElse(Seq.empty)
 
-    createTaskGraph(inputElements, declarations, outputElements, a.typeAliases) flatMap { taskGraph =>
+    val flaggedInputElements = flagStreamableFilesFromMetadata(a.taskDefinitionElement, inputElements)
+
+    createTaskGraph(flaggedInputElements, declarations, outputElements, a.typeAliases) flatMap { taskGraph =>
       val validRuntimeAttributes: ErrorOr[RuntimeAttributes] = a.taskDefinitionElement.runtimeSection match {
         case Some(attributeSection) => createRuntimeAttributes(attributeSection, taskGraph.linkedGraph)
         case None => RuntimeAttributes(Map.empty).validNel
@@ -46,6 +49,38 @@ object TaskDefinitionElementToWomTaskDefinition {
 
       (validRuntimeAttributes, validCommand) mapN { (runtime, command) =>
         CallableTaskDefinition(a.taskDefinitionElement.name, Function.const(command.validNel), runtime, Map.empty, Map.empty, taskGraph.outputs, taskGraph.inputs, Set.empty, Map.empty)
+      }
+    }
+  }
+
+  private def flagStreamableFilesFromMetadata(task: TaskDefinitionElement, inputElements: Seq[InputDeclarationElement]): Seq[InputDeclarationElement] = {
+    def metavalueForInput(task: TaskDefinitionElement, input: InputDeclarationElement): Option[MetaValueElement] = {
+      val parameterMap: Map[String, MetaValueElement] = task.parameterMetaSection match {
+        case Some(meta) => meta.metaAttributes
+        case None => Map()
+      }
+
+      parameterMap.get(input.name)
+    }
+
+    inputElements map { input: InputDeclarationElement =>
+      input.typeElement match {
+        case element: PrimitiveTypeElement =>
+          element.primitiveType match {
+            case _: WomSingleFileType.type =>
+              val mve_opt: Option[MetaValueElement] = metavalueForInput(task, input)
+
+              mve_opt match {
+                case Some(mve: MetaValueElementString) =>
+                  if (mve.value == "stream me!")
+                    input.copy(typeElement = input.typeElement) // TODO: use a new type element so this is actually meaningful
+                  else
+                    input
+                case _ => input
+              }
+            case _ => input
+          }
+        case _ => input
       }
     }
   }
