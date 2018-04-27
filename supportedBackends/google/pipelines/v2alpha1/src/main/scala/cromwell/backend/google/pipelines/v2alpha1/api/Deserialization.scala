@@ -14,8 +14,8 @@ import scala.util.{Failure, Success, Try}
 import cats.syntax.traverse._
 import cats.instances.list._
 /**
-  * This bundles up some ugliness to work around the fact that Operation is not deserialized
-  * completely.
+  * This bundles up some code to work around the fact that Operation is not deserialized
+  * completely from the JSON HTTP response.
   * For instance, the metadata field is a Map[String, Object] even though it represents "Metadata"
   * for which there's an existing class.
   * This class provides implicit functions to deserialize those map to their proper type.
@@ -28,13 +28,13 @@ private [api] object Deserialization {
       */
     def details[T <: GenericJson](implicit tag: ClassTag[T]): Option[Try[T]] = {
       val detailsMap = event.getDetails
-      // The @type field contains the type of the attribute
       if (hasDetailsClass(tag.runtimeClass.getSimpleName)) {
         Option(deserializeTo(detailsMap)(tag))
       } else None
     }
 
     def hasDetailsClass(className: String): Boolean = {
+      // The @type field contains the type of the attribute
       event.getDetails.asScala.get("@type").exists(_.asInstanceOf[String].endsWith(className))
     }
   }
@@ -78,7 +78,7 @@ private [api] object Deserialization {
             // If we can get it and its a GenericJson, it means we need to deserialize the elements to their proper type
             case Success(genericListType) if classOf[GenericJson].isAssignableFrom(genericListType) =>
               // The get throws at the first error and hence doesn't aggregate the errors but it seems
-              // overly complicated (considering that this function is already convoluted) to aggregate them
+              // overly complicated to aggregate them for not much gain here
               val deserialized = list.asScala.map(deserializeTo(_)(ClassTag[GenericJson](genericListType)).get).asJava
               newT.set(key, deserialized)
             // If it's not a GenericJson it means no further deserialization is needed, just set it as is
@@ -90,7 +90,7 @@ private [api] object Deserialization {
         // If the value can be assigned directly to the field, just do that
         case (Some(f), _) if f.getType.isAssignableFrom(value.getClass) => newT.set(key, value)
 
-        // If it can't be assigned and the value is a map, it very likely that the field "key" of T is of some type U 
+        // If it can't be assigned and the value is a map, it is very likely that the field "key" of T is of some type U 
         // but has been deserialized to a Map[String, Object]. In this case we retrieve the type U from the field and recurse
         // to deserialize properly
         case (Some(f), map: java.util.Map[String, Object] @unchecked) if classOf[GenericJson].isAssignableFrom(f.getType) =>
