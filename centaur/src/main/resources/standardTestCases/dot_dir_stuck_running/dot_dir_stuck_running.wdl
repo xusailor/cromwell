@@ -5,7 +5,7 @@ task write_path {
     }
 
     runtime {
-        docker: "ubuntu"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 
     output {
@@ -21,7 +21,7 @@ task read_path {
     }
 
     runtime {
-        docker: "ubuntu"
+        docker: "us.gcr.io/google-containers/ubuntu-slim:0.14"
     }
 
     output {

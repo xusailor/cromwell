@@ -99,7 +99,7 @@ private [api] object Deserialization {
           newT.set(key, deserializedInnerAttribute)
 
         // The set method trips up on some type mismatch between number types, this helps it
-        case (Some(f), number: Number) if f.getType == Integer.TYPE => newT.set(key, number.intValue())
+        case (Some(f), number: Number) if f.getType == classOf[Integer] => newT.set(key, number.intValue())
         case (Some(f), number: Number) if f.getType == classOf[Double] => newT.set(key, number.doubleValue())
         case (Some(f), number: Number) if f.getType == classOf[Float] => newT.set(key, number.floatValue())
         case (Some(f), number: Number) if f.getType == classOf[Long] => newT.set(key, number.longValue())

@@ -7,9 +7,8 @@ import com.google.api.services.genomics.v2alpha1.Genomics
 import com.google.api.services.genomics.v2alpha1.model._
 import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestFactory.CreatePipelineParameters
 import cromwell.backend.google.pipelines.common.api.{PipelinesApiFactoryInterface, PipelinesApiRequestFactory}
-import cromwell.backend.google.pipelines.common.{PipelinesApiFileInput, PipelinesApiFileOutput, PipelinesApiLiteralInput}
 import cromwell.backend.google.pipelines.v2alpha1.PipelinesConversions._
-import cromwell.backend.google.pipelines.v2alpha1.api.{ActionBuilder, DeLocalization, Localization}
+import cromwell.backend.google.pipelines.v2alpha1.api.{ActionBuilder, Delocalization, Localization}
 import cromwell.backend.standard.StandardAsyncJob
 import cromwell.cloudsupport.gcp.auth.GoogleAuthMode
 
@@ -17,7 +16,7 @@ import scala.collection.JavaConverters._
 
 case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, endpointUrl: URL) extends PipelinesApiFactoryInterface
   with Localization
-  with DeLocalization {
+  with Delocalization {
 
   override def build(initializer: HttpRequestInitializer): PipelinesApiRequestFactory = new PipelinesApiRequestFactory {
     val genomics = new Genomics.Builder(
@@ -37,8 +36,6 @@ case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, en
     }
     
     override def runRequest(createPipelineParameters: CreatePipelineParameters) = {
-      val allInputOutputParameters = createPipelineParameters.allParameters
-
       // Disks defined in the runtime attributes
       val disks = createPipelineParameters.toDisks
       // Mounts for disks defined in the runtime attributes
@@ -48,14 +45,9 @@ case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, en
       // localization.size + 1 because action indices are 1-based and the next action after localization will be the user's
       val deLocalization: List[Action] = deLocalizeActions(createPipelineParameters, mounts, localization.size + 1)
 
-      val environment = allInputOutputParameters.flatMap({
-        case fileInput: PipelinesApiFileInput => fileInput.toEnvironment
-        case fileOutput: PipelinesApiFileOutput => fileOutput.toEnvironment
-        // The only literal input is the extra parameter for the auth file which is only relevant in V1
-        case _: PipelinesApiLiteralInput => Map.empty[String, String]
-      }).toMap.asJava
+      val environment = Map.empty[String, String].asJava
 
-      val userAction = ActionBuilder.userAction(createPipelineParameters.dockerImage, createPipelineParameters.commandLine, mounts, createPipelineParameters.labels.asMap)
+      val userAction = ActionBuilder.userAction(createPipelineParameters.dockerImage, createPipelineParameters.commandLine, mounts)
 
       val serviceAccount = new ServiceAccount()
         .setEmail(createPipelineParameters.computeServiceAccount)

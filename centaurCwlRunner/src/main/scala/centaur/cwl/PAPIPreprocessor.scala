@@ -20,7 +20,7 @@ class PAPIPreprocessor(config: Config) {
   private val gcsPrefix = config.as[String]("papi.default-input-gcs-prefix").ensureSlashed
 
   // Default docker pull image
-  val DefaultDockerPull = "dockerPull" -> Json.fromString("ubuntu:latest")
+  val DefaultDockerPull = "dockerPull" -> Json.fromString("us.gcr.io/google-containers/ubuntu-slim:0.14")
   
   // Default docker image to be injected in a pre-existing requirements array
   private val DefaultDockerHint: Json = {

@@ -18,26 +18,28 @@ object ActionBuilder {
   }
   
   private val cloudSdkImage = "google/cloud-sdk:alpine"
-  private def cloudSdkAction: Action = new Action().setImageUri(cloudSdkImage)
+  def cloudSdkAction: Action = new Action().setImageUri(cloudSdkImage)
 
   private def javaFlags(flags: List[ActionFlag]) = flags.map(_.toString).asJava
 
-  def userAction(docker: String, command: String, mounts: List[Mount], labels: Map[String, String]): Action = {
+  def userAction(docker: String, command: String, mounts: List[Mount]): Action = {
     new Action()
       .setImageUri(docker)
       .setCommands(List("/bin/bash", "-c", command).asJava)
       .setMounts(mounts.asJava)
-      .setLabels(labels.asJava)
   }
   
   def gsutilAsText(command: String*)(mounts: List[Mount] = List.empty, flags: List[ActionFlag] = List.empty): Action = {
     gsutil(List("-h", ContentTypeTextHeader) ++ command.toList: _*)(mounts, flags)
   }
 
-  def gsutil(command: String*)(mounts: List[Mount] = List.empty, flags: List[ActionFlag] = List.empty): Action = {
+  def gsutil(command: String*)(mounts: List[Mount] = List.empty, flags: List[ActionFlag] = List.empty, description: Option[String] = None): Action = {
     cloudSdkAction
       .setCommands((List("gsutil") ++ command.toList).asJava)
       .setFlags(flags |> javaFlags)
       .setMounts(mounts.asJava)
+      .setLabels(
+        (Map("command" -> command.mkString(start = "gsutil", sep = " ", end = "")) ++ description.map("description" -> _)).asJava
+      )
   }
 }

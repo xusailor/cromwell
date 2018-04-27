@@ -5,15 +5,15 @@ import common.util.StringUtil._
 import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestFactory.CreatePipelineParameters
 import cromwell.backend.google.pipelines.v2alpha1.PipelinesConversions._
 import cromwell.backend.google.pipelines.v2alpha1.api.ActionBuilder._
-import cromwell.backend.google.pipelines.v2alpha1.api.DeLocalization._
+import cromwell.backend.google.pipelines.v2alpha1.api.Delocalization._
 import cromwell.core.StandardPaths
 
-object DeLocalization {
+object Delocalization {
   private val logsRoot = "/google/logs"
   private val actionsLogRoot = logsRoot + "/action"
 }
 
-trait DeLocalization {
+trait Delocalization {
   private def actionLogRoot(number: Int) = s"$actionsLogRoot/$number"
 
   private def stdout(number: Int) = s"${actionLogRoot(number)}/stdout"

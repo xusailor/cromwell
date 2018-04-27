@@ -171,7 +171,9 @@ centaur/test_cromwell.sh \
   -j${CROMWELL_JAR} \
   -g \
   -c${PAPI_CONF} \
-  -elocaldockertest \
+  -e localdockertest \
+  -e docker_hash_dockerhub_private \
+  -e non_root_default_user \
   -p100 \
   $INTEGRATION_TESTS
 

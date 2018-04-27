@@ -5,11 +5,13 @@ import java.time.OffsetDateTime
 import akka.actor.ActorRef
 import cats.data.EitherT
 import cats.instances.option._
+import cats.syntax.apply._
 import cats.syntax.either._
 import cats.syntax.traverse._
 import com.google.api.client.googleapis.batch.BatchRequest
 import com.google.api.client.googleapis.json.GoogleJsonError
-import com.google.api.services.genomics.v2alpha1.model.{Event, Operation, Pipeline, WorkerAssignedEvent}
+import com.google.api.services.genomics.model.UnexpectedExitStatusEvent
+import com.google.api.services.genomics.v2alpha1.model._
 import common.validation.ErrorOr.ErrorOr
 import common.validation.Validation._
 import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestManager._
@@ -68,7 +70,7 @@ trait GetRequestHandler { this: RequestHandler =>
         val events: ErrorOr[List[Event]] = operation.events
         val pipeline: ErrorOr[Pipeline] = operation.pipeline.toErrorOr
 
-        val workerEvent: Option[WorkerAssignedEvent] = 
+        val workerEvent: Option[WorkerAssignedEvent] =
           (for {
             validEvents <- EitherT.fromEither[Option](events.toEither)
             maybeWorkerEvent <- findWorkerEvent(validEvents)
@@ -96,7 +98,13 @@ trait GetRequestHandler { this: RequestHandler =>
         Option(operation.getError) match {
           case Some(error) =>
             val errorCode = Status.fromCodeValue(error.getCode)
-            UnsuccessfulRunStatus(errorCode, Option(error.getMessage), executionEvents, machineType, zone, instanceName, preemptible)
+            val actions: ErrorOr[List[Action]] = pipeline.map(_.getActions.asScala.toList)
+
+            val errorMessage = (events, actions) mapN {
+              case (e, a) => augmentedErrorMessage(e, a, error.getMessage)
+            } getOrElse error.getMessage
+
+            UnsuccessfulRunStatus(errorCode, Option(errorMessage), executionEvents, machineType, zone, instanceName, preemptible)
           case None => Success(executionEvents, machineType, zone, instanceName)
         }
       } else if (operation.hasStarted) {
@@ -117,5 +125,16 @@ trait GetRequestHandler { this: RequestHandler =>
 
     starterEvent.toList ++ events.map(_.toExecutionEvent)
   }
-}
 
+  private def augmentedErrorMessage(events: List[Event], actions: List[Action], error: String): String = {
+    import cats.instances.list._
+    import cats.syntax.traverse._
+    import cromwell.backend.google.pipelines.v2alpha1.PipelinesConversions._
+
+    error + events
+      .flatMap(_.details[UnexpectedExitStatusEvent].map(_.toErrorOr))
+      .sequence[ErrorOr, UnexpectedExitStatusEvent]
+      .map(_.flatMap(_.toErrorMessage(actions)).mkString(start = "\n", sep = "\n", end = ""))
+      .getOrElse("")
+  }
+}

@@ -5,7 +5,7 @@ task echo {
   output {
     File out = stdout()
   }
-  runtime {docker: "ubuntu@sha256:71cd81252a3563a03ad8daee81047b62ab5d892ebbfbf71cf53415f29c130950"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14@sha256:1d5c0118358fc7651388805e404fe491a80f489bf0e7c5f8ae4156250d6ec7d8"}
 }
 
 task find {
@@ -17,7 +17,7 @@ task find {
   output {
     Int count = read_int(stdout())
   }
-  runtime {docker: "ubuntu@sha256:71cd81252a3563a03ad8daee81047b62ab5d892ebbfbf71cf53415f29c130950"}
+  runtime {docker: "us.gcr.io/google-containers/ubuntu-slim:0.14@sha256:1d5c0118358fc7651388805e404fe491a80f489bf0e7c5f8ae4156250d6ec7d8"}
 }
 
 workflow readFromCache {
