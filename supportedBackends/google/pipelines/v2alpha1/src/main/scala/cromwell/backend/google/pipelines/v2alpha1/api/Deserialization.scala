@@ -19,6 +19,8 @@ import cats.instances.list._
   * For instance, the metadata field is a Map[String, Object] even though it represents "Metadata"
   * for which there's an existing class.
   * This class provides implicit functions to deserialize those map to their proper type.
+  * This uses reflection and is therefore not great performance-wise.
+  * However it is only used once, when the job completes, which should limit the performance hit.
   */
 private [api] object Deserialization {
   implicit class EventDeserialization(val event: Event) extends AnyVal {
@@ -62,7 +64,7 @@ private [api] object Deserialization {
   /**
     * Deserializes a java.util.Map[String, Object] to an instance of T
     */
-  private def deserializeTo[T <: GenericJson](attributes: JMap[String, Object])(implicit tag: ClassTag[T]): Try[T] = Try {
+  private [api] def deserializeTo[T <: GenericJson](attributes: JMap[String, Object])(implicit tag: ClassTag[T]): Try[T] = Try {
     // Create a new instance, because it's a GenericJson there's always a 0-arg constructor
     val newT = tag.runtimeClass.asInstanceOf[Class[T]].newInstance()
 
@@ -99,16 +101,15 @@ private [api] object Deserialization {
           newT.set(key, deserializedInnerAttribute)
 
         // The set method trips up on some type mismatch between number types, this helps it
-        case (Some(f), number: Number) if f.getType == classOf[Integer] => newT.set(key, number.intValue())
-        case (Some(f), number: Number) if f.getType == classOf[Double] => newT.set(key, number.doubleValue())
-        case (Some(f), number: Number) if f.getType == classOf[Float] => newT.set(key, number.floatValue())
-        case (Some(f), number: Number) if f.getType == classOf[Long] => newT.set(key, number.longValue())
+        case (Some(f), number: Number) if f.getType == classOf[java.lang.Integer] => newT.set(key, number.intValue())
+        case (Some(f), number: Number) if f.getType == classOf[java.lang.Double] => newT.set(key, number.doubleValue())
+        case (Some(f), number: Number) if f.getType == classOf[java.lang.Float] => newT.set(key, number.floatValue())
+        case (Some(f), number: Number) if f.getType == classOf[java.lang.Long] => newT.set(key, number.longValue())
         // If either the key is not an attribute of T, or we can't assign it - just skip it
-        // Throwing here would fail the response interpretation and eventually the workflow, which seems excessive
-        // and would make this logic too fragile.
         // The only effect is that an attribute might not be populated and would be null.
         // We would only notice if we do look at this attribute though, which we only do with the purpose of populating metadata
-        // Worst case scenario is thus "a metadata value is null" which seems better over failing the workflow
+        // Worst case scenario is thus "a metadata value is null" which seems better over failing the whole deserialization
+        // and losing properly deserialized attributes
         case _ =>
       }
     }

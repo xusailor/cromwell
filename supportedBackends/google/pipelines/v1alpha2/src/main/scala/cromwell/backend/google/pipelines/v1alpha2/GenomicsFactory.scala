@@ -61,7 +61,7 @@ case class GenomicsFactory(applicationName: String, authMode: GoogleAuthMode, en
         val rpr = new RunPipelineRequest().setEphemeralPipeline(pipeline).setPipelineArgs(rpargs)
 
         val logging = new LoggingOptions()
-        logging.setGcsPath(createPipelineParameters.logGcsPath)
+        logging.setGcsPath(createPipelineParameters.logGcsPath.name)
         rpargs.setLogging(logging)
 
         genomics.pipelines().run(rpr).buildHttpRequest()

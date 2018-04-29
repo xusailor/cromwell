@@ -102,7 +102,7 @@ class DeserializationSpec extends FlatSpec with Matchers {
     virtualMachine.getPreemptible shouldBe false
   }
 
-  it should "be able to say of the operation has started" in {
+  it should "be able to say if the operation has started" in {
     val operation = new Operation()
     
     def makeMetadata(details: Map[String, Object]) = Map[String, AnyRef](
@@ -133,6 +133,23 @@ class DeserializationSpec extends FlatSpec with Matchers {
     operation.hasStarted shouldBe false
     operation.setMetadata(metadataMapNotStarted2)
     operation.hasStarted shouldBe false
+  }
+  
+  it should "deserialize big decimals correctly" in {
+    val valueMap = Map[String, Object](
+      "integerValue" -> BigDecimal(5),
+      "doubleValue" -> BigDecimal.decimal(6D),
+      "floatValue" -> BigDecimal.decimal(7F),
+      "longValue" -> BigDecimal.decimal(8L)
+    ).asJava
+    
+    val deserialized = Deserialization.deserializeTo[DeserializationTestClass](valueMap)
+    deserialized.isSuccess shouldBe true
+    val deserializedSuccess = deserialized.get
+    deserializedSuccess.integerValue shouldBe 5
+    deserializedSuccess.doubleValue shouldBe 6D
+    deserializedSuccess.floatValue shouldBe 7F
+    deserializedSuccess.longValue shouldBe 8L
   }
   
 }

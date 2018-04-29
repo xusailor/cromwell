@@ -2,12 +2,11 @@ package cromwell.backend.google.pipelines.common.api
 
 import com.google.api.client.http.HttpRequest
 import cromwell.backend.BackendJobDescriptor
-import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestFactory.CreatePipelineParameters
 import cromwell.backend.google.pipelines.common._
+import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestFactory.CreatePipelineParameters
 import cromwell.backend.standard.StandardAsyncJob
-import cromwell.core.StandardPaths
 import cromwell.core.labels.Labels
-import common.util.StringUtil._
+import cromwell.core.path.Path
 
 /**
   * The PipelinesApiRequestFactory defines the HttpRequests needed to run jobs
@@ -28,19 +27,16 @@ object PipelinesApiRequestFactory {
   case class CreatePipelineParameters(jobDescriptor: BackendJobDescriptor,
                                       runtimeAttributes: PipelinesApiRuntimeAttributes,
                                       dockerImage: String,
-                                      callRootPath: String,
+                                      callRootPath: Path,
                                       commandLine: String,
-                                      logFileName: String,
+                                      logGcsPath: Path,
                                       inputOutputParameters: InputOutputParameters,
                                       projectId: String,
                                       computeServiceAccount: String,
                                       labels: Labels,
-                                      preemptible: Boolean,
-                                      standardPaths: StandardPaths) {
+                                      preemptible: Boolean) {
     def inputParameters = inputOutputParameters.literalInputParameters ++ inputOutputParameters.fileInputParameters
     def outputParameters = inputOutputParameters.fileOutputParameters
     def allParameters = inputParameters ++ outputParameters
-
-    val logGcsPath = callRootPath.ensureSlashed + logFileName
   }
 }

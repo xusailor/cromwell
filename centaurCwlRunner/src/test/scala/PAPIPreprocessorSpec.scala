@@ -144,7 +144,7 @@ class PAPIPreprocessorSpec extends FlatSpec with Matchers {
       """|class: CommandLineTool
          |hints:
          |  - class: DockerRequirement
-         |    dockerPull: ubuntu:latest
+         |    dockerPull: us.gcr.io/google-containers/ubuntu-slim:0.14
          |cwlVersion: v1.0
          |inputs:
          |  - id: reference
@@ -186,7 +186,7 @@ class PAPIPreprocessorSpec extends FlatSpec with Matchers {
          |    envDef:
          |      TEST_ENV: $(inputs.in)
          |  - class: DockerRequirement
-         |    dockerPull: ubuntu:latest
+         |    dockerPull: us.gcr.io/google-containers/ubuntu-slim:0.14
          |cwlVersion: v1.0
          |inputs:
          |  - id: reference
@@ -239,7 +239,7 @@ class PAPIPreprocessorSpec extends FlatSpec with Matchers {
          |    envDef:
          |      TEST_ENV: $(inputs.in)
          |  DockerRequirement:
-         |    dockerPull: ubuntu:latest
+         |    dockerPull: us.gcr.io/google-containers/ubuntu-slim:0.14
          |
          |baseCommand: ["/bin/bash", "-c", "echo $TEST_ENV"]
          |

@@ -350,15 +350,14 @@ class PipelinesApiAsyncBackendJobExecutionActor(override val standardParams: Sta
       jobDescriptor = jobDescriptor,
       runtimeAttributes = runtimeAttributes,
       dockerImage = jobDockerImage,
-      callRootPath = callRootPath.pathAsString,
+      callRootPath = callRootPath,
       commandLine = jesCommandLine,
-      logFileName = jesLogFilename, 
+      logGcsPath = jesLogPath, 
       inputOutputParameters,
       googleProject(jobDescriptor.workflowDescriptor),
       computeServiceAccount(jobDescriptor.workflowDescriptor),
       backendLabels,
-      preemptible,
-      standardPaths
+      preemptible
     )
   }
 

@@ -174,6 +174,7 @@ centaur/test_cromwell.sh \
   -e localdockertest \
   -e docker_hash_dockerhub_private \
   -e non_root_default_user \
+  -e docker_hash_dockerhub \
   -p100 \
   $INTEGRATION_TESTS
 

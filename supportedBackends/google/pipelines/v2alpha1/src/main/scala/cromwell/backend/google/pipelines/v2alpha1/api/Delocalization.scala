@@ -1,12 +1,10 @@
 package cromwell.backend.google.pipelines.v2alpha1.api
 
 import com.google.api.services.genomics.v2alpha1.model.{Action, Mount}
-import common.util.StringUtil._
 import cromwell.backend.google.pipelines.common.api.PipelinesApiRequestFactory.CreatePipelineParameters
 import cromwell.backend.google.pipelines.v2alpha1.PipelinesConversions._
 import cromwell.backend.google.pipelines.v2alpha1.api.ActionBuilder._
 import cromwell.backend.google.pipelines.v2alpha1.api.Delocalization._
-import cromwell.core.StandardPaths
 
 object Delocalization {
   private val logsRoot = "/google/logs"
@@ -27,9 +25,9 @@ trait Delocalization {
   // The logs are now located in the pipelines-logs directory
   // To keep the behavior similar to V1, we copy stdout/stderr from the user action to the call directory,
   // along with the aggregated log file
-  private def copyLogsToLegacyPaths(standardPaths: StandardPaths, userActionNumber: Int, gcsLegacyLogPath: String) = List (
-    gsutilAsText("cp", stdout(userActionNumber), standardPaths.output.pathAsString)(flags = List(ActionFlag.AlwaysRun)),
-    gsutilAsText("cp", stderr(userActionNumber), standardPaths.error.pathAsString)(flags = List(ActionFlag.AlwaysRun)),
+  private def copyLogsToLegacyPaths(stdoutPath: String, stderrPath: String, userActionNumber: Int, gcsLegacyLogPath: String) = List (
+    gsutilAsText("cp", stdout(userActionNumber), stdoutPath)(flags = List(ActionFlag.AlwaysRun)),
+    gsutilAsText("cp", stderr(userActionNumber), stderrPath)(flags = List(ActionFlag.AlwaysRun)),
     gsutilAsText("cp", aggregatedLog, gcsLegacyLogPath)(flags = List(ActionFlag.AlwaysRun))
   )
 
@@ -40,11 +38,19 @@ trait Delocalization {
   def deLocalizeActions(createPipelineParameters: CreatePipelineParameters,
                         mounts: List[Mount],
                         userActionNumber: Int): List[Action] = {
-    val gcsLogDirectoryPath = createPipelineParameters.callRootPath.ensureSlashed + "pipelines-logs"
-    val gcsLegacyLogPath = createPipelineParameters.logGcsPath
+    val gcsLogDirectoryPath = createPipelineParameters.callRootPath / "pipelines-logs"
+    val gcsLegacyLogPath = createPipelineParameters.logGcsPath.pathAsString
+
+    val stdoutPath = createPipelineParameters.logGcsPath
+      .sibling(createPipelineParameters.logGcsPath.nameWithoutExtension + "-stdout.log")
+      .pathAsString
+
+    val stderrPath = createPipelineParameters.logGcsPath
+      .sibling(createPipelineParameters.logGcsPath.nameWithoutExtension + "-stderr.log")
+      .pathAsString
 
     createPipelineParameters.outputParameters.map(_.toAction(mounts)) ++
-      copyLogsToLegacyPaths(createPipelineParameters.standardPaths, userActionNumber, gcsLegacyLogPath) :+
-      delocalizeLogsAction(gcsLogDirectoryPath)
+      copyLogsToLegacyPaths(stdoutPath, stderrPath, userActionNumber, gcsLegacyLogPath) :+
+      delocalizeLogsAction(gcsLogDirectoryPath.pathAsString)
   }
 }
