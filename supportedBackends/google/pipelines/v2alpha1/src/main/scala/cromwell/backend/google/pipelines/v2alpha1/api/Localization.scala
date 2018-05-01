@@ -6,6 +6,6 @@ import cromwell.backend.google.pipelines.v2alpha1.PipelinesConversions._
 
 trait Localization {
   def localizeActions(createPipelineParameters: CreatePipelineParameters, mounts: List[Mount]) = {
-    createPipelineParameters.inputOutputParameters.fileInputParameters.map(_.toAction(mounts))
+    createPipelineParameters.inputOutputParameters.fileInputParameters.map(_.toAction(mounts, createPipelineParameters.projectId))
   }
 }
