@@ -145,7 +145,7 @@ class GcsPathBuilder(apiStorage: com.google.api.services.storage.Storage,
           val fileSystem = CloudStorageFileSystem.forBucket(bucket, cloudStorageConfiguration, storageOptions)
           val cloudStoragePath = fileSystem.getPath(path)
           val cloudStorage = storageOptions.getService
-          GcsPath(cloudStoragePath, apiStorage, cloudStorage)
+          GcsPath(cloudStoragePath, apiStorage, cloudStorage, projectId)
         }
       case PossiblyValidRelativeGcsPath => Failure(new IllegalArgumentException(s"$string does not have a gcs scheme"))
       case invalid: InvalidGcsPath => Failure(new IllegalArgumentException(invalid.errorMessage))
@@ -157,11 +157,11 @@ class GcsPathBuilder(apiStorage: com.google.api.services.storage.Storage,
 
 case class GcsPath private[gcs](nioPath: NioPath,
                                 apiStorage: com.google.api.services.storage.Storage,
-                                cloudStorage: com.google.cloud.storage.Storage
-                               ) extends Path {
+                                cloudStorage: com.google.cloud.storage.Storage,
+                                projectId: String) extends Path {
   lazy val blob = BlobId.of(cloudStoragePath.bucket, cloudStoragePath.toRealPath().toString)
 
-  override protected def newPath(nioPath: NioPath): GcsPath = GcsPath(nioPath, apiStorage, cloudStorage)
+  override protected def newPath(nioPath: NioPath): GcsPath = GcsPath(nioPath, apiStorage, cloudStorage, projectId)
 
   override def pathAsString: String = {
     val host = cloudStoragePath.bucket().stripSuffix("/")
