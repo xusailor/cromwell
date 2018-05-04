@@ -12,7 +12,7 @@ task size_task {
   }
 }
 
-workflow size_wf {
+workflow input_from_bucket_with_requester_pays {
   File file
   call size_task { input: sz = size(file) }
 
