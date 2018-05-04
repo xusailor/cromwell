@@ -29,6 +29,7 @@ final case class GcsPathBuilderFactory(globalConfig: Config, instanceConfig: Con
   val authMode = authModeValidation.unsafe(s"Failed to create authentication mode for $authModeAsString")
 
   def withOptions(options: WorkflowOptions)(implicit as: ActorSystem, ec: ExecutionContext) = {
+    println(s"AUTH MODE: $authMode.name")
     GcsPathBuilder.fromAuthMode(authMode, applicationName, DefaultRetrySettings, GcsStorage.DefaultCloudStorageConfiguration, options)
   }
 }

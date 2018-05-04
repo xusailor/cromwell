@@ -8,6 +8,6 @@ files {
 }
 
 metadata {
-  workflowName: size_wf
+  workflowName: input_from_bucket_with_requester_pays
   status: Succeeded
 }
