@@ -91,13 +91,15 @@ object GcsPathBuilder {
                    applicationName: String,
                    retrySettings: RetrySettings,
                    cloudStorageConfiguration: CloudStorageConfiguration,
-                   options: WorkflowOptions)(implicit as: ActorSystem, ec: ExecutionContext): Future[GcsPathBuilder] = {
+                   options: WorkflowOptions,
+                   defaultProject: Option[String])(implicit as: ActorSystem, ec: ExecutionContext): Future[GcsPathBuilder] = {
     authMode.retryCredential(options) map { credentials =>
       fromCredentials(credentials,
         applicationName,
         retrySettings,
         cloudStorageConfiguration,
-        options
+        options,
+        defaultProject
       )
     }
   }
@@ -106,10 +108,15 @@ object GcsPathBuilder {
                       applicationName: String,
                       retrySettings: RetrySettings,
                       cloudStorageConfiguration: CloudStorageConfiguration,
-                      options: WorkflowOptions): GcsPathBuilder = {
+                      options: WorkflowOptions,
+                      defaultProject: Option[String]): GcsPathBuilder = {
     // Grab the google project from Workflow Options if specified and set
-    // that to be the project used by the StorageOptions Builder
-    val project =  options.get("google_project").toOption
+    // that to be the project used by the StorageOptions Builder. If it's not
+    // specified use the default project mentioned in config file
+    val project: Option[String] =  options.get("google_project").toOption match {
+      case Some(googleProject) => Option(googleProject)
+      case None => defaultProject
+    }
 
     val storageOptions = GcsStorage.gcsStorageOptions(credentials, retrySettings, project)
 
