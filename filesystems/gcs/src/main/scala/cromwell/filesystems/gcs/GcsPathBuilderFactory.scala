@@ -12,7 +12,6 @@ import cromwell.core.WorkflowOptions
 import cromwell.core.path.PathBuilderFactory
 import cromwell.filesystems.gcs.GcsPathBuilderFactory.DefaultRetrySettings
 import org.threeten.bp.Duration
-//import scala.util.{Failure, Try}
 
 import scala.concurrent.ExecutionContext
 
