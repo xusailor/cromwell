@@ -1,6 +1,8 @@
 package cromwell.filesystems.gcs
 
+import java.io.{BufferedReader, InputStreamReader}
 import java.net.URI
+import java.nio.charset.Charset
 
 import akka.actor.ActorSystem
 import com.google.api.gax.retrying.RetrySettings
@@ -16,6 +18,7 @@ import cromwell.filesystems.gcs.GcsPathBuilder._
 import cromwell.filesystems.gcs.GoogleUtil._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.io.Codec
 import scala.language.postfixOps
 import scala.util.{Failure, Try}
 
@@ -174,6 +177,24 @@ case class GcsPath private[gcs](nioPath: NioPath,
     val host = cloudStoragePath.bucket().stripSuffix("/")
     val path = cloudStoragePath.toString.stripPrefix("/")
     s"${CloudStorageFileSystem.URI_SCHEME}://$host/$path"
+  }
+
+  override def bytesIterator: Iterator[Byte] = {
+    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+    Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator
+  }
+
+  override def readContentAsString(implicit codec: Codec): String = {
+    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+    val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
+    new String(byteArray, Charset.forName(codec.name))
+  }
+
+  override def readAllLinesInFile(implicit codec: Codec): Traversable[String] = {
+    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+    val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
+
+    Stream.continually(reader.readLine()).takeWhile(_ != null)
   }
 
   override def pathWithoutScheme: String = {

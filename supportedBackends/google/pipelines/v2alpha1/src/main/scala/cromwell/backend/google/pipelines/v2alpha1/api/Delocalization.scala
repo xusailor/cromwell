@@ -18,17 +18,17 @@ trait Delocalization {
   private def stderr(number: Int) = s"${actionLogRoot(number)}/stderr"
   private def aggregatedLog = s"$logsRoot/output"
 
-  private def delocalizeLogsAction(gcsLogPath: String) = {
-    gsutilAsText("cp", "-r", "/google/logs", gcsLogPath)(flags = List(ActionFlag.AlwaysRun))
+  private def delocalizeLogsAction(gcsLogPath: String, projectId: String) = {
+    gsutilAsText("-u", projectId, "cp", "-r", "/google/logs", gcsLogPath)(flags = List(ActionFlag.AlwaysRun))
   }
 
   // The logs are now located in the pipelines-logs directory
   // To keep the behavior similar to V1, we copy stdout/stderr from the user action to the call directory,
   // along with the aggregated log file
-  private def copyLogsToLegacyPaths(stdoutPath: String, stderrPath: String, userActionNumber: Int, gcsLegacyLogPath: String) = List (
-    gsutilAsText("cp", stdout(userActionNumber), stdoutPath)(flags = List(ActionFlag.AlwaysRun)),
-    gsutilAsText("cp", stderr(userActionNumber), stderrPath)(flags = List(ActionFlag.AlwaysRun)),
-    gsutilAsText("cp", aggregatedLog, gcsLegacyLogPath)(flags = List(ActionFlag.AlwaysRun))
+  private def copyLogsToLegacyPaths(stdoutPath: String, stderrPath: String, userActionNumber: Int, gcsLegacyLogPath: String, projectId: String) = List (
+    gsutilAsText("-u", projectId, "cp", stdout(userActionNumber), stdoutPath)(flags = List(ActionFlag.AlwaysRun)),
+    gsutilAsText("-u", projectId, "cp", stderr(userActionNumber), stderrPath)(flags = List(ActionFlag.AlwaysRun)),
+    gsutilAsText("-u", projectId, "cp", aggregatedLog, gcsLegacyLogPath)(flags = List(ActionFlag.AlwaysRun))
   )
 
   /**
@@ -49,8 +49,10 @@ trait Delocalization {
       .sibling(createPipelineParameters.logGcsPath.nameWithoutExtension + "-stderr.log")
       .pathAsString
 
-    createPipelineParameters.outputParameters.map(_.toAction(mounts)) ++
-      copyLogsToLegacyPaths(stdoutPath, stderrPath, userActionNumber, gcsLegacyLogPath) :+
-      delocalizeLogsAction(gcsLogDirectoryPath.pathAsString)
+    val projectId = createPipelineParameters.projectId
+
+    createPipelineParameters.outputParameters.map(_.toAction(mounts, projectId)) ++
+      copyLogsToLegacyPaths(stdoutPath, stderrPath, userActionNumber, gcsLegacyLogPath, projectId) :+
+      delocalizeLogsAction(gcsLogDirectoryPath.pathAsString, projectId)
   }
 }

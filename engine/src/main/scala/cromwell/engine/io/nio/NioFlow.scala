@@ -79,13 +79,13 @@ class NioFlow(parallelism: Int,
   private def readAsString(read: IoContentAsStringCommand) = {
     read.options.maxBytes match {
       case Some(limit) =>
-        Future(read.file.bytes.take(limit)) map { bytesIterator =>
+        Future(read.file.bytesIterator.take(limit)) map { bytesIterator =>
           if (read.options.failOnOverflow && bytesIterator.hasNext)
             throw new IOException(s"File ${read.file.pathAsString} is larger than $limit Bytes")
           else
             new String(bytesIterator.toArray, StandardCharsets.UTF_8)
         }
-      case _ => Future(read.file.contentAsString)
+      case _ => Future(read.file.readContentAsString)
     }
   }
 
@@ -113,7 +113,7 @@ class NioFlow(parallelism: Int,
   }
 
   private def readLines(exists: IoReadLinesCommand) = Future {
-    exists.file.lines
+    exists.file.readAllLinesInFile
   }
 
   private def createDirectoriesForSFSPath(path: Path) = path match {
