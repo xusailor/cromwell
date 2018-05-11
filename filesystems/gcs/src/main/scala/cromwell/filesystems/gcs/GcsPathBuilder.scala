@@ -1,6 +1,6 @@
 package cromwell.filesystems.gcs
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.{BufferedReader, IOException, InputStreamReader}
 import java.net.URI
 import java.nio.charset.Charset
 
@@ -16,11 +16,12 @@ import cromwell.core.WorkflowOptions
 import cromwell.core.path.{NioPath, Path, PathBuilder}
 import cromwell.filesystems.gcs.GcsPathBuilder._
 import cromwell.filesystems.gcs.GoogleUtil._
+//import cromwell.util.TryWithResource.tryWithResource
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Codec
 import scala.language.postfixOps
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Success, Try}
 
 object GcsPathBuilder {
   /*
@@ -180,21 +181,80 @@ case class GcsPath private[gcs](nioPath: NioPath,
   }
 
   override def bytesIterator: Iterator[Byte] = {
-    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
-    Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator
+//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
+//
+//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream =>
+//      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator)
+//
+//    output match {
+//      case Success(itr) => itr
+//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+//    }
+
+    Try {
+      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator
+    } match {
+      case Success(itr) => itr
+      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+    }
   }
 
   override def readContentAsString(implicit codec: Codec): String = {
-    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
-    val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
-    new String(byteArray, Charset.forName(codec.name))
+//    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+//
+//    try{
+//      val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
+//      new String(byteArray, Charset.forName(codec.name))
+//    }
+//    finally {
+//      println("-----------Inside finally -----------")
+//      inputStream.close()
+//    }
+
+//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
+//
+//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
+//      val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
+//      new String(byteArray, Charset.forName(codec.name))
+//    })
+//
+//    output match {
+//      case Success(str) => str
+//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+//    }
+
+    Try {
+      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+      val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
+      new String(byteArray, Charset.forName(codec.name))
+    } match {
+      case Success(str) => str
+      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+    }
   }
 
   override def readAllLinesInFile(implicit codec: Codec): Traversable[String] = {
-    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
-    val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
+//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
+//
+//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
+//      val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
+//      Stream.continually(reader.readLine()).takeWhile(_ != null)
+//    })
+//
+//    output match {
+//      case Success(s) => s
+//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+//    }
 
-    Stream.continually(reader.readLine()).takeWhile(_ != null)
+    Try {
+      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+      val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
+      Stream.continually(reader.readLine()).takeWhile(_ != null)
+    } match {
+      case Success(v) => v
+      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+    }
   }
 
   override def pathWithoutScheme: String = {

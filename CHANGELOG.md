@@ -26,12 +26,14 @@ Generally, we recommend that you change this value regardless as it is being dep
 | V2 | cromwell.backend.google.pipelines.v2alpha1.PipelinesApiLifecycleActorFactory |
 
 **Requester Pays**
+
 Cromwell now supports [Requester Pays](https://cloud.google.com/storage/docs/requester-pays) feature for Cloud Storage. With Requester Pays enabled on your bucket,
 you can require requesters to include a billing project in their requests, thus billing the requester's project. If the bucket you are accessing has requester pays enabled,
 to access the file inside that bucket you need to mention the Google project id which can be billed for that request. You can add the billing project information in following ways:
 * It can be added as `'google-project':'project-id'` as part of workflow options during workflow submission
 * It can be included inside configuration file as shown in [`Getting started on Google Pipelines API`](http://cromwell.readthedocs.io/en/develop/tutorials/PipelinesApi101/) where you need to replace the `<google-billing-project-id>` with the project id **(HIGHLY RECOMMENDED)**
 * If it is not mentioned using above 2 ways, Cromwell will use the default project that has been configured with gcloud
+
 It is highly recommended to add the project id as part of configuration if you don't want to specify as part of workflow options each time you submit request. The above ways are in
 descending order of priority, overriding the one below it if mentioned. So if you mention the project id using all three, Cromwell will use the one specified along with workflow options.
 Although, you just need to mention the project id using one way.
