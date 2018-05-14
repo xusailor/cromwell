@@ -180,26 +180,36 @@ case class GcsPath private[gcs](nioPath: NioPath,
     s"${CloudStorageFileSystem.URI_SCHEME}://$host/$path"
   }
 
+  /***
+    * This method needs to be overridden to make it work with requester pays. We need to go around NioPath
+    * as currently it doesn't support to set the billing project id. In future when it is supported, remove
+    * this method and pass the billing project inside options parameter
+   */
   override def bytesIterator: Iterator[Byte] = {
-//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
-//
-//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream =>
-//      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator)
-//
-//    output match {
-//      case Success(itr) => itr
-//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
-//    }
+    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
 
-    Try {
-      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
-      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator
-    } match {
+    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream =>
+      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator)
+
+    output match {
       case Success(itr) => itr
       case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
     }
+
+//    Try {
+//      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+//      Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toIterator
+//    } match {
+//      case Success(itr) => itr
+//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+//    }
   }
 
+  /***
+    * This method needs to be overridden to make it work with requester pays. We need to go around NioPath
+    * as currently it doesn't support to set the billing project id. In future when it is supported, remove
+    * this method and pass the billing project inside options parameter
+    */
   override def readContentAsString(implicit codec: Codec): String = {
 //    val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
 //
@@ -212,49 +222,54 @@ case class GcsPath private[gcs](nioPath: NioPath,
 //      inputStream.close()
 //    }
 
-//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
-//
-//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
-//      val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
-//      new String(byteArray, Charset.forName(codec.name))
-//    })
-//
-//    output match {
-//      case Success(str) => str
-//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
-//    }
+    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
 
-    Try {
-      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
       val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
       new String(byteArray, Charset.forName(codec.name))
-    } match {
+    })
+
+    output match {
       case Success(str) => str
       case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
     }
-  }
 
-  override def readAllLinesInFile(implicit codec: Codec): Traversable[String] = {
-//    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
-//
-//    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
-//      val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
-//      Stream.continually(reader.readLine()).takeWhile(_ != null)
-//    })
-//
-//    output match {
-//      case Success(s) => s
+//    Try {
+//      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+//      val byteArray = Stream.continually(inputStream.read).takeWhile(_ != -1).map(_.toByte).toArray
+//      new String(byteArray, Charset.forName(codec.name))
+//    } match {
+//      case Success(str) => str
 //      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
 //    }
+  }
 
-    Try {
-      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+  /***
+    * This method needs to be overridden to make it work with requester pays. We need to go around NioPath
+    * as currently it doesn't support to set the billing project id. In future when it is supported, remove
+    * this method and pass the billing project inside options parameter
+    */
+  override def readAllLinesInFile(implicit codec: Codec): Traversable[String] = {
+    val storageObject = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId)
+
+    val output = tryWithResource(() => storageObject.executeMediaAsInputStream())(inputStream => {
       val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
       Stream.continually(reader.readLine()).takeWhile(_ != null)
-    } match {
-      case Success(v) => v
+    })
+
+    output match {
+      case Success(s) => s
       case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
     }
+
+//    Try {
+//      val inputStream = apiStorage.objects().get(blob.getBucket, blob.getName).setUserProject(projectId).executeMediaAsInputStream()
+//      val reader = new BufferedReader(new InputStreamReader(inputStream, codec.name))
+//      Stream.continually(reader.readLine()).takeWhile(_ != null)
+//    } match {
+//      case Success(v) => v
+//      case Failure(e) => throw new IOException(s"Creating an input stream failed during executeMediaAsInputStream() because of ${e.getMessage}")
+//    }
   }
 
   override def pathWithoutScheme: String = {
