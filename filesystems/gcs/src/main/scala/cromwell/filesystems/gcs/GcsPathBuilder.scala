@@ -16,7 +16,7 @@ import cromwell.core.WorkflowOptions
 import cromwell.core.path.{NioPath, Path, PathBuilder}
 import cromwell.filesystems.gcs.GcsPathBuilder._
 import cromwell.filesystems.gcs.GoogleUtil._
-//import cromwell.util.TryWithResource.tryWithResource
+import cromwell.util.TryWithResource.tryWithResource
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Codec
