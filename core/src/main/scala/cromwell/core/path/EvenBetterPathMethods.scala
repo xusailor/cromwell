@@ -1,5 +1,6 @@
 package cromwell.core.path
 
+import java.io.InputStream
 import java.nio.file.{FileAlreadyExistsException, Files}
 import java.nio.file.attribute.{PosixFilePermission, PosixFilePermissions}
 
@@ -31,12 +32,6 @@ trait EvenBetterPathMethods {
   final def createTempFile(prefix: String = "", suffix: String = ""): Path = {
     newPath(java.nio.file.Files.createTempFile(nioPathPrivate, prefix, suffix))
   }
-
-  def bytesIterator: Iterator[Byte] = bytes
-
-  def readContentAsString(implicit codec: Codec): String = contentAsString
-
-  def readAllLinesInFile(implicit codec: Codec): Traversable[String] = lines
 
   def chmod(permissions: String): this.type = {
     setPermissions(PosixFilePermissions.fromString(permissions).asScala.toSet)
@@ -87,4 +82,10 @@ trait EvenBetterPathMethods {
   final def untailed = UntailedWriter(this)
 
   final def tailed(tailedSize: Int) = TailedWriter(this, tailedSize)
+
+  def mediaInputStream: InputStream = newInputStream
+
+  def readContentAsString(implicit codec: Codec): String = contentAsString
+
+  def readAllLinesInFile(implicit codec: Codec): Traversable[String] = lines
 }
